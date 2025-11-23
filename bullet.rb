@@ -24,8 +24,8 @@ class Bullet
     @bounce_count = 0
     @max_bounces = 2
     @off_screen_timer = 0
-    @width = 12
-    @height = 12
+    @width = @image.width
+    @height = @image.height
     
     initialize_velocity(pattern_data)
   end
@@ -124,9 +124,9 @@ class Bullet
       end
       
     when :petal
-      if @time < 120
-        @vy += Math.sin(@time * 0.1) * 0.3
-      end
+      # if @time < 120
+      #   @vy += Math.sin(@time * 0.1) * 0.3
+      # end
     end
     
     if @x > SCREEN_WIDTH - 20 && @vx > 0 && @bounce_count < @max_bounces

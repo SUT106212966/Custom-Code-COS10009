@@ -88,16 +88,25 @@ class Player
         # Draw the POP animation
         if @bubble_pop_index < @bubble_pop_frames.length
           img = @bubble_pop_frames[@bubble_pop_index]
-          # Center the pop over the bee (adjust -10 or +10 to align perfectly)
-          img.draw(@x - 10, @y - 10, 2) if img
+          if img
+             # 1. Calculate the exact center of the visible bee (same as we did for the bubble)
+             bee_center_x = @x + (@image.width / 2)
+             bee_center_y = @y + (@image.height / 2)
+
+             # 2. Draw the pop image so its center matches the bee's center
+             #    (We subtract half the pop image's size to center it)
+             img.draw(bee_center_x - (img.width / 2), bee_center_y - (img.height / 2), 2)
+          end
         end
       else
         # Draw the STATIC bubble wrapping the bee
         if @bubble_image
           # Draw it slightly larger than the bee, pulsing slightly
           pulse = 1.0 + Math.sin(Gosu.milliseconds / 200.0) * 0.05
+          center_x = @x + (@image.width / 2)
+          center_y = @y + (@image.height / 2)
           # Offset x/y to center the bubble on the bee
-          @bubble_image.draw_rot(@x + @width/2, @y + @height/2, 2, 0, 0.5, 0.5, pulse, pulse)
+          @bubble_image.draw_rot(center_x, center_y, 2, 0, 0.5, 0.5, pulse, pulse)
         else
           # Fallback if image fails to load: Draw Blue Circle
           color = Gosu::Color.new(100, 0, 0, 255) # Transparent Blue

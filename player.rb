@@ -76,7 +76,8 @@ class Player
     # Shooting Animation
     if @animating
       @animation_frame += 1
-      @animating = false if @animation_frame >= @sting_animation.size
+      # Replace .size check with while loop logic
+      @animating = false if @animation_frame >= @sting_animation.length
     end
   end
 
@@ -85,7 +86,7 @@ class Player
     if @shield_until > 0
       if @bubble_animating
         # Draw the POP animation
-        if @bubble_pop_index < @bubble_pop_frames.size
+        if @bubble_pop_index < @bubble_pop_frames.length
           img = @bubble_pop_frames[@bubble_pop_index]
           # Center the pop over the bee (adjust -10 or +10 to align perfectly)
           img.draw(@x - 10, @y - 10, 2) if img
@@ -115,11 +116,13 @@ class Player
             
     @image.draw(@x, @y, 1, 1, 1, color)
 
-    # Sparkle effect
+    # Sparkle effect - converted 8.times to while loop
     if @animating
-      8.times do
+      i = 0
+      while i < 8
         color = Gosu::Color.new(200, rand(255), rand(255), rand(255))
         Gosu.draw_rect(@x + rand(-18..18), @y + rand(-18..18), 3, 3, color, 2)
+        i += 1
       end
     end
   end

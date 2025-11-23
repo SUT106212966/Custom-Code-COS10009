@@ -40,7 +40,9 @@ class Boss
     
     if @pattern_timer > rand(pattern_change_speed)
       @pattern_timer = 0
-      @current_pattern = @available_patterns.sample
+      # Replace .sample with while loop implementation
+      random_index = rand(@available_patterns.length)
+      @current_pattern = @available_patterns[random_index]
     end
 
     # Shooting Speed Logic
@@ -53,8 +55,16 @@ class Boss
       generate_bullets(@current_pattern, player_x, player_y)
     end
 
-    @bullets.each(&:update)
-    @bullets.reject!(&:off_screen?)
+    # Manual Loop for Bullet Update
+    i = 0
+    while i < @bullets.size
+      @bullets[i].update
+      if @bullets[i].off_screen?
+        @bullets.delete_at(i)
+      else
+        i += 1
+      end
+    end
   end
 
   def generate_bullets(pattern, player_x, player_y)
@@ -63,93 +73,113 @@ class Boss
     case pattern
     when :circle
       bullet_count = (base_count * @bullet_count_multiplier).to_i
-      bullet_count.times do |i|
-        angle = i * (2 * Math::PI / bullet_count) # Perfect spacing
-        bullet_type = [:pollen, :petal].sample
+      i = 0
+      while i < bullet_count
+        angle = i * (2 * Math::PI / bullet_count)
+        # Replace .sample with while loop implementation
+        bullet_types = [:pollen, :petal]
+        random_index = rand(bullet_types.length)
+        bullet_type = bullet_types[random_index]
         speed = (BOSS_BULLET_SPEED * @bullet_speed_multiplier) 
         
         bullet = Bullet.new(@x, @y, bullet_type)
         bullet.vx = Math.cos(angle) * speed
         bullet.vy = Math.sin(angle) * speed
         @bullets << bullet
+        i += 1
       end
       
     when :spiral
       bullet_count = (base_count * 0.7 * @bullet_count_multiplier).to_i
       base_angle = Gosu.milliseconds / 100.0 
-      bullet_count.times do |i|
+      i = 0
+      while i < bullet_count
         angle = base_angle + (i * 0.5) 
         bullet = Bullet.new(@x, @y, :pollen)
         speed = (BOSS_BULLET_SPEED * @bullet_speed_multiplier)
         bullet.vx = Math.cos(angle) * speed
         bullet.vy = Math.sin(angle) * speed
         @bullets << bullet
+        i += 1
       end
       
     when :wave
       bullet_count = (base_count * @bullet_count_multiplier).to_i
       vertical_spread = 40
-      bullet_count.times do |i|
+      i = 0
+      while i < bullet_count
         offset_y = (i - bullet_count/2) * vertical_spread
         bullet = Bullet.new(@x, @y + offset_y, :petal)
         bullet.vx = -BOSS_BULLET_SPEED * @bullet_speed_multiplier
         bullet.vy = Math.sin(i) * 0.5 
         @bullets << bullet
+        i += 1
       end
 
     when :homing
       bullet_count = (base_count * 0.5 * @bullet_count_multiplier).to_i
-      bullet_count.times do
+      i = 0
+      while i < bullet_count
         offset_y = rand(-80..80)
         @bullets << Bullet.new(@x, @y + offset_y, :pollen, player_x, player_y, homing: true)
+        i += 1
       end
 
     when :shotgun
       bullet_count = (base_count * 1.5 * @bullet_count_multiplier).to_i
       spread_angle = Math::PI / 3 
-      bullet_count.times do
+      i = 0
+      while i < bullet_count
         angle = Math::PI + rand(-spread_angle/2..spread_angle/2) 
         speed = (BOSS_BULLET_SPEED * @bullet_speed_multiplier) * rand(1.0..1.5)
         bullet = Bullet.new(@x, @y, :petal)
         bullet.vx = Math.cos(angle) * speed
         bullet.vy = Math.sin(angle) * speed
         @bullets << bullet
+        i += 1
       end
 
     when :random_spread
       bullet_count = (base_count * @bullet_count_multiplier).to_i
-      bullet_count.times do
+      i = 0
+      while i < bullet_count
         angle = rand(0..2*Math::PI)
         speed = (BOSS_BULLET_SPEED * @bullet_speed_multiplier) * rand(0.8..1.2)
         bullet = Bullet.new(@x, @y, :pollen)
         bullet.vx = Math.cos(angle) * speed
         bullet.vy = Math.sin(angle) * speed
         @bullets << bullet
+        i += 1
       end
 
     when :double_circle
-      2.times do |circle|
+      circle = 0
+      while circle < 2
         offset = circle * (Math::PI / base_count) 
         bullet_count = (base_count * @bullet_count_multiplier).to_i
-        bullet_count.times do |i|
+        i = 0
+        while i < bullet_count
           angle = i * (2 * Math::PI / bullet_count) + offset
           bullet = Bullet.new(@x, @y, :pollen)
           speed = (BOSS_BULLET_SPEED * @bullet_speed_multiplier) * 0.8
           bullet.vx = Math.cos(angle) * speed
           bullet.vy = Math.sin(angle) * speed
           @bullets << bullet
+          i += 1
         end
+        circle += 1
       end
       
-    # For any other pattern, fallback to basic spiral/spread
     else 
         bullet_count = (base_count * @bullet_count_multiplier).to_i
-        bullet_count.times do
+        i = 0
+        while i < bullet_count
             angle = rand(0..Math::PI*2)
             bullet = Bullet.new(@x, @y, :pollen)
             bullet.vx = Math.cos(angle) * 2
             bullet.vy = Math.sin(angle) * 2
             @bullets << bullet
+            i += 1
         end
     end
   end

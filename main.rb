@@ -33,7 +33,7 @@ class GameWindow < Gosu::Window
       pollen: (Gosu::Image.new('media/fpollen.png') rescue Gosu::Image.from_text('o', 12)),
       petal: (Gosu::Image.new('media/petal.png') rescue Gosu::Image.from_text('~', 12)),
       flower: (Gosu::Image.new('media/flower.png') rescue Gosu::Image.from_text('F', 28)),
-      cloud: (Gosu::Image.new('media/cloud.png') rescue Gosu::Image.from_text('☁', 32)),
+      # REMOVED CLOUD HERE
       bubble: (Gosu::Image.new('media/bubble.png') rescue nil),
       bubble_pop: (Gosu::Image.load_tiles('media/bubble_pop.png', 64, 64, tileable: false) rescue [])
     }
@@ -51,17 +51,8 @@ class GameWindow < Gosu::Window
     @land = @images[:land]
     @sky_x = 0
     
-    @clouds = []
-    8.times do |i|
-      @clouds << { 
-        x: rand(SCREEN_WIDTH), 
-        y: rand(50..200),
-        speed: rand(0.3..0.7),
-        scale: rand(0.8..1.2)
-      }
-    end
+    # REMOVED CLOUD SETUP LOOP HERE
 
-    @cloud_image = @images[:cloud]
     @hit_effect_timer = 0
   end
 
@@ -106,26 +97,52 @@ class GameWindow < Gosu::Window
     @player.update(self, @bee_stings)
     @boss.update(@player.x, @player.y)
 
-    @bee_stings.each(&:update)
-    @bee_stings.reject!(&:off_screen?)
+    # Update bee stings with while loop
+    i = 0
+    while i < @bee_stings.length
+      @bee_stings[i].update
+      i += 1
+    end
+    
+    # Remove off-screen bee stings with while loop
+    i = 0
+    while i < @bee_stings.length
+      if @bee_stings[i].off_screen?
+        @bee_stings.delete_at(i)
+      else
+        i += 1
+      end
+    end
 
-    @props.each(&:update)
-    @props.reject!(&:off_screen?)
+    # Update props with while loop
+    i = 0
+    while i < @props.length
+      @props[i].update
+      i += 1
+    end
+    
+    # Remove off-screen props with while loop
+    i = 0
+    while i < @props.length
+      if @props[i].off_screen?
+        @props.delete_at(i)
+      else
+        i += 1
+      end
+    end
 
     @sky_x -= 1
     @sky_x = 0 if @sky_x <= -SCREEN_WIDTH
 
-    @clouds.each do |c|
-      c[:x] -= c[:speed]
-      if c[:x] < -200
-        c[:x] = SCREEN_WIDTH + 50
-        c[:y] = rand(50..200)
-      end
-    end
+    # REMOVED CLOUD MOVEMENT LOOP HERE
 
     @props << Prop.new(rand(SCREEN_WIDTH), 0, [:heart, :shield].sample) if rand < @prop_spawn_rate
 
-    @boss.bullets.dup.each do |bullet|
+    # Boss bullets collision with while loop
+    bullets_dup = @boss.bullets.dup
+    i = 0
+    while i < bullets_dup.length
+      bullet = bullets_dup[i]
       if @player.collides_with_bullet?(bullet)
         if @player.take_damage(bullet.damage)
           @hit_effect_timer = 10
@@ -135,16 +152,25 @@ class GameWindow < Gosu::Window
         end
         @boss.bullets.delete(bullet)
       end
+      i += 1
     end
 
-    @bee_stings.dup.each do |sting|
-      @boss.bullets.dup.each do |bullet|
+    # Bee stings vs boss bullets collision with while loop
+    stings_dup = @bee_stings.dup
+    i = 0
+    while i < stings_dup.length
+      sting = stings_dup[i]
+      bullets_dup = @boss.bullets.dup
+      j = 0
+      while j < bullets_dup.length
+        bullet = bullets_dup[j]
         if collision_rect?(sting.x, sting.y, sting.width, sting.height,
                            bullet.x, bullet.y, bullet.width, bullet.height)
           @boss.bullets.delete(bullet)
           @bee_stings.delete(sting)
           break
         end
+        j += 1
       end
 
       if collision_rect?(sting.x, sting.y, sting.width, sting.height,
@@ -156,9 +182,14 @@ class GameWindow < Gosu::Window
           @game_state = :victory
         end
       end
+      i += 1
     end
 
-    @props.dup.each do |prop|
+    # Props collision with while loop
+    props_dup = @props.dup
+    i = 0
+    while i < props_dup.length
+      prop = props_dup[i]
       if collision_rect?(@player.x + 10, @player.y + 5, @player.width - 20, @player.height - 10,
                          prop.x, prop.y, prop.width, prop.height)
         if prop.type == :heart
@@ -168,6 +199,7 @@ class GameWindow < Gosu::Window
         end
         @props.delete(prop)
       end
+      i += 1
     end
 
     @hit_effect_timer -= 1 if @hit_effect_timer > 0
@@ -212,10 +244,12 @@ class GameWindow < Gosu::Window
     @font.draw_text("Choose Difficulty:", SCREEN_WIDTH/2 - 80, 180, 1)
     
     difficulties = ["Easy", "Medium", "Hard"]
-    difficulties.each_with_index do |diff, i|
+    i = 0
+    while i < difficulties.length
       color = @menu_option == i ? Gosu::Color::YELLOW : Gosu::Color::WHITE
       y_pos = 230 + i * 50
-      @font.draw_text("#{diff}", SCREEN_WIDTH/2 - 30, y_pos, 1, 1, 1, color)
+      @font.draw_text("#{difficulties[i]}", SCREEN_WIDTH/2 - 30, y_pos, 1, 1, 1, color)
+      i += 1
     end
     
     @font.draw_text("Use UP/DOWN to select, ENTER to start", SCREEN_WIDTH/2 - 150, 400, 1)
@@ -227,34 +261,52 @@ class GameWindow < Gosu::Window
     @sky.draw(@sky_x, 0, 0, sky_scale_x, sky_scale_y)
     @sky.draw(@sky_x + SCREEN_WIDTH, 0, 0, sky_scale_x, sky_scale_y)
 
-    @clouds.each do |c|
-      alpha = 180 + 40 * Math.sin(Gosu.milliseconds / 2000.0 + c[:x] * 0.01)
-      color = Gosu::Color.new(alpha.to_i, 255, 255, 255)
-      @cloud_image.draw(c[:x], c[:y], 0, c[:scale], c[:scale], color)
-    end
+    # REMOVED CLOUD DRAWING LOOP HERE
 
     land_scale_x = SCREEN_WIDTH / @land.width.to_f
     land_scale_y = SCREEN_HEIGHT / @land.height.to_f
     @land.draw(0, 450, 1, land_scale_x, land_scale_y)
 
     if @hit_effect_timer > 0
-      12.times do
+      i = 0
+      while i < 12
         color = Gosu::Color.new(150, 255, 0, 0)
         Gosu.draw_rect(@player.x + rand(-30..30), @player.y + rand(-30..30), 4, 4, color, 3)
+        i += 1
       end
     end
 
     @player.draw
     @boss.draw
-    @bee_stings.each(&:draw)
-    @boss.bullets.each(&:draw)
-    @props.each(&:draw)
+    
+    # Draw bee stings with while loop
+    i = 0
+    while i < @bee_stings.length
+      @bee_stings[i].draw
+      i += 1
+    end
+    
+    # Draw boss bullets with while loop
+    i = 0
+    while i < @boss.bullets.length
+      @boss.bullets[i].draw
+      i += 1
+    end
+    
+    # Draw props with while loop
+    i = 0
+    while i < @props.length
+      @props[i].draw
+      i += 1
+    end
 
-    @font.draw_text("HP: #{@player.hp}/#{@player.max_hp}", 10, 10, 3)
-    @font.draw_text("Boss HP: #{@boss.hp}/#{@boss.max_hp}", 10, 32, 3)
-    @font.draw_text("Difficulty: #{@difficulty_settings[:type].to_s.capitalize}", 10, 54, 3)
-    @font.draw_text("Bullets: #{@boss.bullets.size}", 10, 76, 3)
-    @font.draw_text("Pattern: #{@boss.current_pattern}", 10, 98, 3) if @boss.current_pattern
+    # --- CHANGED TO BLACK FONT HERE ---
+    # format: draw_text(text, x, y, z, scale_x, scale_y, color)
+    @font.draw_text("HP: #{@player.hp}/#{@player.max_hp}", 10, 10, 3, 1, 1, Gosu::Color::BLACK)
+    @font.draw_text("Boss HP: #{@boss.hp}/#{@boss.max_hp}", 10, 32, 3, 1, 1, Gosu::Color::BLACK)
+    @font.draw_text("Difficulty: #{@difficulty_settings[:type].to_s.capitalize}", 10, 54, 3, 1, 1, Gosu::Color::BLACK)
+    @font.draw_text("Bullets: #{@boss.bullets.size}", 10, 76, 3, 1, 1, Gosu::Color::BLACK)
+    @font.draw_text("Pattern: #{@boss.current_pattern}", 10, 98, 3, 1, 1, Gosu::Color::BLACK) if @boss.current_pattern
   end
 
   def draw_game_over

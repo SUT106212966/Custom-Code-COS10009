@@ -8,13 +8,15 @@ class Prop
     if type == :heart
       @frames = Gosu::Image.load_tiles('media/love.png', 16, 16, tileable: true) rescue []
       @animation_frame = 0
+      @width = 32
+      @height = 32
     else
       @image = Gosu::Image.new('media/nshield.ng.png') rescue Gosu::Image.from_text('⬢', 24)
+      @width = @image.width
+      @height = @image.height
     end
     @float_offset = rand(100)
     @time = 0
-    @width = 24
-    @height = 24
   end
 
   def update

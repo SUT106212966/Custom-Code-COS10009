@@ -9,7 +9,7 @@ require_relative 'prop'
 class GameWindow < Gosu::Window
   def initialize
     super(SCREEN_WIDTH, SCREEN_HEIGHT)
-    self.caption = "Bee vs Flower Bullet Hell"
+    self.caption = "Pollen Requiem"
     
     @game_state = :menu 
     @difficulty_settings = GameConfig.medium_settings 
@@ -136,8 +136,11 @@ class GameWindow < Gosu::Window
 
     # REMOVED CLOUD MOVEMENT LOOP HERE
 
-    @props << Prop.new(rand(SCREEN_WIDTH), 0, [:heart, :shield].sample) if rand < @prop_spawn_rate
-
+    if rand < @prop_spawn_rate
+      safe_x = rand(50..550)
+      @props << Prop.new(safe_x, 0, [:heart, :shield].sample)
+    end
+    
     # Boss bullets collision with while loop
     bullets_dup = @boss.bullets.dup
     i = 0
@@ -190,7 +193,7 @@ class GameWindow < Gosu::Window
     i = 0
     while i < props_dup.length
       prop = props_dup[i]
-      if collision_rect?(@player.x + 10, @player.y + 5, @player.width - 20, @player.height - 10,
+      if collision_rect?(@player.x + 5, @player.y + 5, @player.width - 10, @player.height - 5,
                          prop.x, prop.y, prop.width, prop.height)
         if prop.type == :heart
           @player.heal(20)
@@ -240,19 +243,19 @@ class GameWindow < Gosu::Window
   def draw_menu
     @sky.draw(0, 0, 0)
     
-    @title_font.draw_text("Bee vs Flower", SCREEN_WIDTH/2 - 150, 100, 1, 1, 1, Gosu::Color::YELLOW)
-    @font.draw_text("Choose Difficulty:", SCREEN_WIDTH/2 - 80, 180, 1)
+    @title_font.draw_text("Pollen Requiem", SCREEN_WIDTH/2 - 130, 100, 1, 1, 1, Gosu::Color::BLACK)
+    @font.draw_text("Choose Difficulty:", SCREEN_WIDTH/2 - 80, 180, 1, 1, 1, Gosu::Color::BLACK)
     
     difficulties = ["Easy", "Medium", "Hard"]
     i = 0
     while i < difficulties.length
-      color = @menu_option == i ? Gosu::Color::YELLOW : Gosu::Color::WHITE
+      color = @menu_option == i ? Gosu::Color::YELLOW : Gosu::Color::BLACK
       y_pos = 230 + i * 50
       @font.draw_text("#{difficulties[i]}", SCREEN_WIDTH/2 - 30, y_pos, 1, 1, 1, color)
       i += 1
     end
     
-    @font.draw_text("Use UP/DOWN to select, ENTER to start", SCREEN_WIDTH/2 - 150, 400, 1)
+    @font.draw_text("Use UP/DOWN to select, ENTER to start", SCREEN_WIDTH/2 - 150, 400, 1, 1, 1, Gosu::Color::BLACK)
   end
 
   def draw_game
@@ -322,13 +325,13 @@ class GameWindow < Gosu::Window
   def draw_victory
     Gosu.draw_rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, Gosu::Color.new(150, 0, 100, 0), 10)
     
-    @title_font.draw_text("VICTORY!", SCREEN_WIDTH/2 - 100, 150, 11, 1, 1, Gosu::Color::GREEN)
+    @title_font.draw_text("VICTORY!", SCREEN_WIDTH/2 - 90, 150, 11, 1, 1, Gosu::Color::GREEN)
     @font.draw_text("Congratulations! You defeated the evil flower!", SCREEN_WIDTH/2 - 190, 220, 11)
     @font.draw_text("Your bee saved the day!", SCREEN_WIDTH/2 - 100, 260, 11)
     @font.draw_text("Difficulty: #{@difficulty_settings[:type].to_s.capitalize}", SCREEN_WIDTH/2 - 70, 300, 11)
     
-    @font.draw_text("Press ENTER to Play Again", SCREEN_WIDTH/2 - 100, 350, 11, 1, 1, Gosu::Color::YELLOW)
-    @font.draw_text("Press ESC to return to Main Menu", SCREEN_WIDTH/2 - 120, 400, 11)
+    @font.draw_text("Press ENTER to Play Again", SCREEN_WIDTH/2 - 120, 350, 11, 1, 1, Gosu::Color::RED)
+    @font.draw_text("Press ESC to return to Main Menu", SCREEN_WIDTH/2 - 140, 400, 11)
   end
 
   def button_down(id)

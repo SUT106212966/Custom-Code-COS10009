@@ -224,11 +224,6 @@ class Boss
     Gosu.draw_rect(@x - bar_width / 2, @y - @image.height / 2 - 20, bar_width, bar_height, Gosu::Color::RED, 1)
     # Green Health (Shrinks as HP drops)
     Gosu.draw_rect(@x - bar_width / 2, @y - @image.height / 2 - 20, bar_width * (@hp / @max_hp.to_f), bar_height, Gosu::Color::GREEN, 1)
-    
-    # 3. Draw Debug Circle (If enabled in Config)
-    if GameConfig::SHOW_HITBOXES
-      draw_debug_circle(@x + 7, @y - 20, 55, Gosu::Color::BLUE)
-    end
   end
 
   # --- HELPER FUNCTIONS ---

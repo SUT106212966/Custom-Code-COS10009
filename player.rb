@@ -82,10 +82,15 @@ class Player
       @bubble_animating = false
     end
 
-    # Shooting Animation (Sparkles)
+    # Shooting Animation
     if @animating
       @animation_frame += 1
-      @animating = false if @animation_frame >= @sting_animation.length
+      
+      # Just count to 15 frames (approx 0.25 seconds) then stop
+      if @animation_frame > 15
+        @animating = false
+        @animation_frame = 0
+      end
     end
   end
 

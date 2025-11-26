@@ -1,17 +1,18 @@
 module GameConfig
-  # --- EASY MODE (Updated with more bullets) ---
+
+  # --- EASY MODE ---
   def self.easy_settings
     {
       type: :easy,
-      player_hp: 200,                      # INCREASED: Give the player more health (was 150)
-      player_shoot_delay: 6,               # DECREASED: Let player shoot faster (was 8)
-      boss_bullet_speed_mult: 0.4,         # DECREASED: Make bullets even slower (was 0.5)
+      player_hp: 200,                      
+      player_shoot_delay: 10,              
+      boss_bullet_speed_mult: 0.5,         
       boss_change_pattern_range: 300..500,
-      boss_shoot_delay_range: 80..120,    # INCREASED: Boss waits longer between shots (was 80..120)
-      boss_bullet_count_mult: 0.8,         # DECREASED: Boss fires fewer bullets overall (was 1.0)
-      boss_base_bullet_range: 4..8,        # DECREASED: Base number of bullets per shot (was 6..12)
-      boss_patterns: [:circle, :wave],     # SIMPLIFIED: Removed :random_spread and :shotgun for now
-      prop_spawn_rate: 0.005               # INCREASED: More hearts/shields spawn (was 0.003)
+      boss_shoot_delay_range: 80..120,    
+      boss_bullet_count_mult: 1.2,         
+      boss_base_bullet_range: 4..8,        
+      boss_patterns: [:circle, :wave, :spiral],     
+      prop_spawn_rate: 0.003          
     }
   end
 
@@ -26,7 +27,7 @@ module GameConfig
       boss_shoot_delay_range: 50..90,
       boss_bullet_count_mult: 1.0,
       boss_base_bullet_range: 8..16,
-      boss_patterns: [:circle, :spiral, :homing, :wave, :bloom, :random_spread, :cross, :shotgun],
+      boss_patterns: [:circle, :spiral, :wave, :random_spread],
       prop_spawn_rate: 0.002
     }
   end
@@ -42,18 +43,21 @@ module GameConfig
       boss_shoot_delay_range: 40..80,
       boss_bullet_count_mult: 1.2,
       boss_base_bullet_range: 12..20,
-      boss_patterns: [:circle, :spiral, :homing, :wave, :bloom, :random_spread,
-                      :double_circle, :cross, :zigzag, :shotgun, :vortex, :random_aim],
+      boss_patterns: [:circle, :spiral, :homing, :wave, :random_spread, :shotgun],
       prop_spawn_rate: 0.001
     }
   end
 end
 
 # GLOBAL CONSTANTS
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
-BASE_BULLET_SPEED = 4
-BASE_BOSS_BULLET_SPEED = 2
-PROP_SPEED = 0.5
-BULLET_SPEED = BASE_BULLET_SPEED
-BOSS_BULLET_SPEED = BASE_BOSS_BULLET_SPEED
+module GameConfig
+  SCREEN_WIDTH = 800
+  SCREEN_HEIGHT = 600
+  BASE_BULLET_SPEED = 4                         # Standard speed for player bullets
+  BASE_BOSS_BULLET_SPEED = 2                    # Standard speed for boss bullets
+  PROP_SPEED = 0.5                              # How fast items fall down
+  
+  # Copying values to main variables
+  BULLET_SPEED = BASE_BULLET_SPEED
+  BOSS_BULLET_SPEED = BASE_BOSS_BULLET_SPEED
+end

@@ -1,5 +1,4 @@
 class Bullet
-  # Allow other files to read/write these variables
   attr_accessor :x, :y, :type, :damage, :vx, :vy, :homing, :blooming, :bloom_distance, :bloom_target_x, :bloom_target_y, :bloom_timer, :bounce_count, :off_screen_timer, :width, :height
 
   def initialize(x, y, type, target_x = nil, target_y = nil, pattern_data = {})

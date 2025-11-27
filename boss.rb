@@ -242,21 +242,6 @@ class Boss
     return dist < (55 + 5) 
   end
 
-  # 2. Helper to draw circles using lines
-  def draw_debug_circle(cx, cy, r, color, z=100)
-    points = 32
-    step = 360.0 / points
-    points.times do |i|
-      angle1 = i * step
-      angle2 = (i + 1) * step
-      x1 = cx + Gosu.offset_x(angle1, r)
-      y1 = cy + Gosu.offset_y(angle1, r)
-      x2 = cx + Gosu.offset_x(angle2, r)
-      y2 = cy + Gosu.offset_y(angle2, r)
-      Gosu.draw_line(x1, y1, color, x2, y2, color, z)
-    end
-  end
-
   def take_damage(amount = 2)
     @hp -= amount
     @hp = 0 if @hp < 0

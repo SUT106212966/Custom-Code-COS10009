@@ -54,7 +54,7 @@ class Player
     # If SPACE is pressed and Cooldown is finished
     if Gosu.button_down?(Gosu::KB_SPACE) && @shoot_cooldown <= 0
       # Create a new BeeSting bullet at the bee's nose
-      global_bee_stings << BeeSting.new(@x + 50, @y + 25)
+      global_bee_stings << BeeSting.new(@x + 94, @y + 48)
       @shoot_cooldown = @shoot_delay
       @animating = true # Start the sparkle animation
     end
@@ -130,22 +130,7 @@ class Player
     # Flash Yellow if immune (took damage recently)
     color = (@immune_until > 0 && (Gosu.milliseconds / 100) % 2 == 0) ? Gosu::Color::YELLOW : Gosu::Color::WHITE
     @image.draw(@x, @y, 1, 1, 1, color)
-    
-    # --- 3. Draw Shooting Sparkles ---
-    if @animating
-      i = 0
-      while i < 8
-        c = Gosu::Color.new(200, rand(255), rand(255), rand(255))
-        
-        # Sparkles appear at the STINGER position (New Hitbox Center)
-        # We add 94 and 52 to align with the hitbox
-        rx = (@x + 94) + rand(-18..18)
-        ry = (@y + 52) + rand(-18..18)
 
-        Gosu.draw_rect(rx, ry, 3, 3, c, 2)
-        i += 1
-      end
-    end
   end
 
   # ==========================================
